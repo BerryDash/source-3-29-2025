@@ -1,22 +1,12 @@
 using System.Net.Http;
 using UnityEngine;
 using System;
-using System.Linq;
 
 public class Loading : MonoBehaviour
 {
-    private HttpClient httpClient = new HttpClient();
-    private string clientVersion = "1.1.1";
+    private readonly HttpClient httpClient = new();
     private bool shouldLoadUpdateScene = false;
     private bool versionChecked = false;
-    private RuntimePlatform[] desktopPlatforms = new[] {
-        RuntimePlatform.WindowsPlayer,
-        RuntimePlatform.LinuxPlayer,
-        RuntimePlatform.OSXPlayer,
-        RuntimePlatform.WindowsEditor,
-        RuntimePlatform.LinuxEditor,
-        RuntimePlatform.OSXEditor
-    };
 
     void Awake()
     {
@@ -68,7 +58,7 @@ public class Loading : MonoBehaviour
                         if (response.IsSuccessStatusCode)
                         {
                             string version = response.Content.ReadAsStringAsync().Result;
-                            if (version != clientVersion)
+                            if (version != Application.version)
                             {
                                 shouldLoadUpdateScene = true;
                             }
@@ -95,7 +85,7 @@ public class Loading : MonoBehaviour
         {
             Screen.orientation = ScreenOrientation.LandscapeLeft;
         }
-        if (desktopPlatforms.Contains(Application.platform))
+        if (!Application.isMobilePlatform)
         {
             Screen.fullScreen = PlayerPrefs.GetInt("Setting1") == 1;
         }
@@ -115,15 +105,5 @@ public class Loading : MonoBehaviour
                 UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
             }
         }
-    }
-
-    private static bool IsNewerVersion(string currentVersion, string latestVersion)
-    {
-        Version currentVer, latestVer;
-        if (Version.TryParse(currentVersion, out currentVer) && Version.TryParse(latestVersion, out latestVer))
-        {
-            return latestVer > currentVer;
-        }
-        return false;
     }
 }

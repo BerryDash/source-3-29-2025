@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
     public float groundYPosition = -4.3f;
     private bool isGrounded;
 
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }

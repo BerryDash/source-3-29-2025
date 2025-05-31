@@ -5,9 +5,7 @@ public class UpdateRequired : MonoBehaviour
 {
     void Awake()
     {
-        GameObject buttonObj = GameObject.Find("Canvas/Button");
-        Button btn = buttonObj.GetComponent<Button>();
-        btn.onClick.AddListener(TaskOnClick);
+        gameObject.GetComponent<Button>().onClick.AddListener(TaskOnClick);
     }
 
     void TaskOnClick()

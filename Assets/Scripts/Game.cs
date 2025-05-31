@@ -1,10 +1,4 @@
-﻿using System;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEngine;
-using System.IO;
-using System.Collections;
+﻿using UnityEngine;
 
 public class Game : MonoBehaviour
 {
@@ -16,7 +10,7 @@ public class Game : MonoBehaviour
     private float slownessLeft = 0f;
     private float screenWidth = 0f;
     private bool isGrounded = false;
-    private float groundYPosition = -4.3f;
+    private readonly float groundYPosition = -4.3f;
     private GameObject bird;
     private Rigidbody2D rb;
 

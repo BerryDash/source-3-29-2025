@@ -10,9 +10,11 @@ public class Game : MonoBehaviour
     private float slownessLeft = 0f;
     private float screenWidth = 0f;
     private bool isGrounded = false;
-    private readonly float groundYPosition = -4.3f;
+    private readonly float groundYPosition = -4.1359f;
     private GameObject bird;
     private Rigidbody2D rb;
+    public GameObject pausePanel;
+    public AudioSource songLoop;
 
     void Awake()
     {
@@ -158,7 +160,7 @@ public class Game : MonoBehaviour
                         }
                         else if (backButton.GetComponent<SpriteRenderer>().bounds.Contains(touchPosition))
                         {
-                            UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+                            Pause();
                         }
                     }
                 }
@@ -195,7 +197,7 @@ public class Game : MonoBehaviour
                     }
                     if (backButton.GetComponent<SpriteRenderer>().bounds.Contains(clickPosition))
                     {
-                        UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+                        Pause();
                     }
                 }
             }
@@ -213,7 +215,6 @@ public class Game : MonoBehaviour
             bird.transform.position += new Vector3(movespeed, 0, 0);
             ClampPosition(screenWidth, bird);
             bird.transform.localScale = new Vector3(-1.35f, 1.35f, 1.35f);
-            doMoveRight = false;
         }
         if (doJump && isGrounded)
         {
@@ -229,7 +230,6 @@ public class Game : MonoBehaviour
             {
                 rb.linearVelocity = Vector2.up * 9;
             }
-            doJump = false;
         }
     }
 
@@ -242,6 +242,7 @@ public class Game : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (pausePanel.activeSelf) return;
         MoveBird();
         SpawnBerries();
         GameObject boostText = GameObject.Find("BoostText");
@@ -263,7 +264,7 @@ public class Game : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Escape) || Input.GetKey(KeyCode.JoystickButton7) || Input.GetKey(KeyCode.Joystick2Button7))
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+            Pause();
         }
     }
 
@@ -273,7 +274,7 @@ public class Game : MonoBehaviour
         {
             nextSpawnTime = Time.time + 1f / spawnRate;
 
-            float spawnProbability = UnityEngine.Random.value;
+            float spawnProbability = Random.value;
             GameObject newBerry;
             SpriteRenderer spriteRenderer;
 
@@ -309,7 +310,7 @@ public class Game : MonoBehaviour
             spriteRenderer.sortingOrder = -5;
 
             float screenWidth = Camera.main.orthographicSize * 2 * Camera.main.aspect;
-            float spawnPositionX = UnityEngine.Random.Range(-screenWidth / 2.17f, screenWidth / 2.17f);
+            float spawnPositionX = Random.Range(-screenWidth / 2.17f, screenWidth / 2.17f);
             newBerry.transform.position = new Vector3(spawnPositionX, Camera.main.orthographicSize + 1, 0);
 
             Rigidbody2D rb = newBerry.AddComponent<Rigidbody2D>();
@@ -320,6 +321,7 @@ public class Game : MonoBehaviour
 
     void Update()
     {
+        if (pausePanel.activeSelf) return;
         CheckIfGrounded();
         if (screenWidth != Camera.main.orthographicSize * 2 * Camera.main.aspect)
         {
@@ -434,7 +436,7 @@ public class Game : MonoBehaviour
 
     void Respawn()
     {
-        bird.transform.position = new Vector3(0, -4.3f, 0);
+        bird.transform.position = new Vector3(0, groundYPosition, 0);
         bird.transform.localScale = new Vector3(1.35f, 1.35f, 1.35f);
         rb.gravityScale = 0;
         rb.linearVelocity = Vector2.zero;
@@ -503,10 +505,40 @@ public class Game : MonoBehaviour
         }
     }
 
-
     void OnApplicationQuit()
     {
         PlayerPrefs.SetInt("HighScore", highscore);
         PlayerPrefs.Save();
+    }
+
+    void Pause()
+    {
+        songLoop.Pause();
+        pausePanel.SetActive(true);
+
+        GameObject[] berries = GameObject.FindGameObjectsWithTag("Berry");
+        GameObject[] poisonberries = GameObject.FindGameObjectsWithTag("PoisonBerry");
+        GameObject[] ultraberries = GameObject.FindGameObjectsWithTag("UltraBerry");
+        GameObject[] slownessberries = GameObject.FindGameObjectsWithTag("SlowBerry");
+
+        rb.gravityScale = 0f;
+        rb.linearVelocity = Vector2.zero;
+
+        foreach (GameObject b in berries)
+        {
+            b.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        }
+        foreach (GameObject pb in poisonberries)
+        {
+            pb.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        }
+        foreach (GameObject ub in ultraberries)
+        {
+            ub.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        }
+        foreach (GameObject sb in slownessberries)
+        {
+            sb.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        }
     }
 }

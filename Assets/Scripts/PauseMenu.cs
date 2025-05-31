@@ -3,34 +3,51 @@ using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
-    GameObject pauseMenuObj;
+    public Button backButton;
+    public Button continueButton;
+    public AudioSource songLoop;
 
-    private void Start()
+    void Awake()
     {
-        pauseMenuObj = GameObject.Find("Canvas/PauseMenu");
-        GameObject menuButtonObj = GameObject.Find("Canvas/PauseMenu/ReturnToMenu");
-        GameObject playButtonObj = GameObject.Find("Canvas/PauseMenu/ReturnToMenu");
-        GameObject settingsButtonObj = GameObject.Find("Canvas/PauseMenu/ReturnToMenu");
-        Button menuButton = menuButtonObj.GetComponent<Button>();
-        Button playButton = playButtonObj.GetComponent<Button>();
-        Button settingsButton = settingsButtonObj.GetComponent<Button>();
-        menuButton.onClick.AddListener(MenuClick);
-        playButton.onClick.AddListener(TogglePauseMenu);
-        settingsButton.onClick.AddListener(SettingsClick);
+        backButton.onClick.AddListener(() =>
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+        });
+        continueButton.onClick.AddListener(Unpause);
     }
 
-    public void TogglePauseMenu()
+    void Update()
     {
-        pauseMenuObj.SetActive(false);
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            gameObject.SetActive(false);
+        }
     }
 
-    private void MenuClick()
+    void Unpause()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
-    }
+        songLoop.UnPause();
+        gameObject.SetActive(false);
+        GameObject[] berries = GameObject.FindGameObjectsWithTag("Berry");
+        GameObject[] poisonberries = GameObject.FindGameObjectsWithTag("PoisonBerry");
+        GameObject[] ultraberries = GameObject.FindGameObjectsWithTag("UltraBerry");
+        GameObject[] slownessberries = GameObject.FindGameObjectsWithTag("SlowBerry");
 
-    private void SettingsClick()
-    {
-        pauseMenuObj.SetActive(!pauseMenuObj.activeSelf);
+        foreach (GameObject b in berries)
+        {
+            b.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(0, -3);
+        }
+        foreach (GameObject pb in poisonberries)
+        {
+            pb.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(0, -3);
+        }
+        foreach (GameObject ub in ultraberries)
+        {
+            ub.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(0, -3);
+        }
+        foreach (GameObject sb in slownessberries)
+        {
+            sb.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(0, -3);
+        }
     }
 }

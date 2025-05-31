@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.Space))
             {
-                rb.velocity = Vector2.up * jumpForce;
+                rb.linearVelocity = Vector2.up * jumpForce;
             }
         }
     }
@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
         if (transform.position.y < groundYPosition)
         {
             transform.position = new Vector2(transform.position.x, groundYPosition);
-            rb.velocity = new Vector2(rb.velocity.x, 0); 
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); 
         }
     }
 }
